@@ -1,0 +1,7 @@
+{
+  "name": "Nimai Diamonds",
+  "description": "A premium digital storefront for ethical diamonds, bespoke designs, and immersive luxury experiences in Mumbai.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
