@@ -24,6 +24,7 @@ import { DIAMONDS, IMAGES, Diamond } from './constants';
 import { getStyleRecommendations } from './services/geminiService';
 import Counter from './components/Counter';
 import Galaxy from './components/Galaxy';
+import VisualSearch from './components/VisualSearch';
 
 type View = 'home' | 'shop' | 'about' | 'contact' | 'product';
 
@@ -31,6 +32,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedDiamond, setSelectedDiamond] = useState<Diamond | null>(null);
   const [isAiStylistOpen, setIsAiStylistOpen] = useState(false);
+  const [isVisualSearchOpen, setIsVisualSearchOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -78,7 +80,10 @@ export default function App() {
         )}
         {currentView === 'shop' && (
           <motion.div key="shop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <ShopView onProductSelect={(d) => navigateTo('product', d)} />
+            <ShopView 
+              onProductSelect={(d) => navigateTo('product', d)} 
+              onVisualSearchOpen={() => setIsVisualSearchOpen(true)}
+            />
           </motion.div>
         )}
         {currentView === 'product' && selectedDiamond && (
@@ -97,6 +102,12 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <VisualSearch 
+        isOpen={isVisualSearchOpen} 
+        onClose={() => setIsVisualSearchOpen(false)} 
+        onProductSelect={(d) => navigateTo('product', d)}
+      />
 
       {/* AI Stylist Trigger */}
       <button 
@@ -337,7 +348,7 @@ function HomeView({ onExplore, onProductSelect }: { onExplore: () => void, onPro
   );
 }
 
-function ShopView({ onProductSelect }: { onProductSelect: (d: Diamond) => void }) {
+function ShopView({ onProductSelect, onVisualSearchOpen }: { onProductSelect: (d: Diamond) => void; onVisualSearchOpen: () => void }) {
   return (
     <>
       {/* Shop Hero Section with Galaxy */}
@@ -366,7 +377,16 @@ function ShopView({ onProductSelect }: { onProductSelect: (d: Diamond) => void }
           >
             <span className="text-primary font-sans text-xs tracking-[0.5em] uppercase block mb-4">The Vault</span>
             <h1 className="font-display text-5xl md:text-7xl tracking-[0.2em] uppercase text-white">The Collection</h1>
-            <div className="w-24 h-px bg-primary mx-auto mt-12"></div>
+            <div className="w-24 h-px bg-primary mx-auto mt-12 mb-12"></div>
+            
+            <button 
+              onClick={onVisualSearchOpen}
+              className="group relative inline-flex items-center gap-4 px-8 py-4 bg-primary text-black font-display text-xs tracking-[0.3em] uppercase overflow-hidden transition-all hover:pr-12"
+            >
+              <Search size={16} />
+              <span>Visual Search</span>
+              <ArrowRight className="absolute right-4 opacity-0 group-hover:opacity-100 transition-all" size={16} />
+            </button>
           </motion.div>
         </div>
       </section>
