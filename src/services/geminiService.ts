@@ -1,10 +1,22 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { DIAMONDS } from "../constants";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not defined. Please set it in your environment variables.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 export async function getStyleRecommendations(prompt: string) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `You are a luxury jewelry stylist for Nimai Diamonds. 
@@ -24,6 +36,7 @@ export async function getStyleRecommendations(prompt: string) {
 
 export async function findSimilarDiamonds(base64Image: string, mimeType: string): Promise<string[]> {
   try {
+    const ai = getAI();
     const diamondData = DIAMONDS.map(d => ({
       id: d.id,
       name: d.name,
